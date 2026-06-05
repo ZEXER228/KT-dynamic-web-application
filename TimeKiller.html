@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time Killer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+font-family:Arial,sans-serif;
+background:linear-gradient(135deg,#0f172a,#111827,#1e1b4b);
+color:white;
+min-height:100vh;
+overflow-x:hidden;
+}
+nav{
+display:flex;
+justify-content:center;
+gap:15px;
+padding:20px;
+background:rgba(0,0,0,.3);
+backdrop-filter:blur(10px);
+position:sticky;
+top:0;
+}
+nav a{
+padding:10px 20px;
+background:#00e5ff22;
+border:1px solid #00e5ff;
+border-radius:10px;
+cursor:pointer;
+}
+.page{display:none;padding:40px;max-width:1100px;margin:auto}
+.page.active{display:block;animation:fade .5s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+h1{text-align:center;font-size:4rem;color:#00e5ff;margin-bottom:20px}
+.card{
+background:rgba(255,255,255,.05);
+border:1px solid #00e5ff;
+padding:20px;
+margin:15px 0;
+border-radius:15px;
+transition:.3s;
+}
+.card:hover{transform:translateY(-10px);box-shadow:0 0 20px #00e5ff}
+button{
+padding:12px 20px;
+border:none;
+border-radius:10px;
+background:#00e5ff;
+cursor:pointer;
+font-weight:bold;
+margin-top:10px;
+}
+#activity{
+font-size:1.4rem;
+margin-top:20px;
+color:#ff00ff;
+}
+#trail{
+position:fixed;
+inset:0;
+pointer-events:none;
+}
+.particle{
+position:absolute;
+width:8px;
+height:8px;
+border-radius:50%;
+background:#00e5ff;
+animation:die 1s forwards;
+}
+@keyframes die{
+to{opacity:0;transform:scale(0)}
+}
+.carousel img{
+width:100%;
+height:450px;
+object-fit:cover;
+border-radius:15px;
+}
+input,textarea{
+width:100%;
+padding:12px;
+margin:10px 0;
+border-radius:10px;
+border:none;
+}
+.success{
+margin-top:15px;
+color:#00ff88;
+font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<div id="trail"></div>
+
+<nav>
+<a onclick="showPage('home')">Главная</a>
+<a onclick="showPage('gallery')">Развлечения</a>
+<a onclick="showPage('contact')">Контакты</a>
+</nav>
+
+<div id="home" class="page active">
+<h1>TIME KILLER</h1>
+<div class="card">
+<h2>Убей скуку за 60 секунд</h2>
+<p>Нажми кнопку или клавишу SPACE для случайного развлечения.</p>
+<button onclick="randomIdea()">Мне скучно</button>
+<div id="activity"></div>
+</div>
+</div>
+
+<div id="gallery" class="page">
+<h1>ТОП РАЗВЛЕЧЕНИЙ</h1>
+<div class="carousel">
+<img id="slide" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200" alt="">
+</div>
+<div style="text-align:center">
+<button onclick="prevSlide()">◀</button>
+<button onclick="nextSlide()">▶</button>
+</div>
+<p style="margin-top:15px;text-align:center">Используй стрелки ← → на клавиатуре.</p>
+</div>
+
+<div id="contact" class="page">
+<h1>Предложи свой Time Killer</h1>
+<div class="card">
+<form id="form">
+<input type="text" placeholder="Имя" required>
+<input type="email" placeholder="Email" required>
+<textarea placeholder="Твоя идея..." required></textarea>
+<button type="submit">Отправить</button>
+</form>
+<div id="msg" class="success"></div>
+</div>
+</div>
+
+<script>
+function showPage(id){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+
+const ideas=[
+"Сыграй в Minecraft",
+"Посмотри мемы",
+"Послушай музыку",
+"Посмотри фильм",
+"Пройди тест IQ",
+"Сыграй в шахматы",
+"Посмотри YouTube",
+"Погуляй 15 минут"
+];
+
+function randomIdea(){
+activity.textContent=ideas[Math.floor(Math.random()*ideas.length)];
+}
+
+document.addEventListener("mousemove",e=>{
+const p=document.createElement("div");
+p.className="particle";
+p.style.left=e.pageX+"px";
+p.style.top=e.pageY+"px";
+trail.appendChild(p);
+setTimeout(()=>p.remove(),1000);
+});
+
+const slides=[
+"https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200",
+"https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200",
+"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200",
+"https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1200"
+];
+
+let current=0;
+
+function updateSlide(){
+document.getElementById("slide").src=slides[current];
+}
+
+function nextSlide(){
+current=(current+1)%slides.length;
+updateSlide();
+}
+
+function prevSlide(){
+current=(current-1+slides.length)%slides.length;
+updateSlide();
+}
+
+document.addEventListener("keydown",e=>{
+if(e.code==="Space"){
+randomIdea();
+}
+if(e.key==="ArrowRight"){
+nextSlide();
+}
+if(e.key==="ArrowLeft"){
+prevSlide();
+}
+if(e.key==="t"||e.key==="T"){
+document.body.style.filter=document.body.style.filter?"":"hue-rotate(180deg)";
+}
+if(e.key==="Escape"){
+document.getElementById("trail").innerHTML="";
+}
+});
+
+document.getElementById("form").addEventListener("submit",e=>{
+e.preventDefault();
+msg.textContent="Спасибо! Твоя идея может появиться на сайте.";
+e.target.reset();
+});
+</script>
+
+</body>
+</html>
